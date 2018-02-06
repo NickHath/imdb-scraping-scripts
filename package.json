@@ -1,0 +1,15 @@
+{
+  "name": "imdb_scraping_scripts",
+  "version": "1.0.0",
+  "description": "",
+  "main": "genresToTitles.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "axios": "^0.17.1",
+    "dotenv": "^5.0.0"
+  }
+}
