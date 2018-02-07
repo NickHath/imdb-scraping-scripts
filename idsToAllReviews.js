@@ -18,23 +18,27 @@ fs.readFile(`${titleDirectory}/${genre}_titles_with_ids.txt`, 'utf-8', (err, dat
     return tokens[tokens.length - 1].replace(',', '');
   });
   // test on small list
-  imdbIDs = imdbIDs.slice(0,10);
-  imdbIDs.forEach(id => {
+  imdbIDs = imdbIDs.slice(0,250);
+  imdbIDs.forEach((id, index) => {
     let baseUrl = `http://www.imdb.com/title/${id}/reviews/_ajax`;
-    console.log(baseUrl);
     let reviewsTXT = '';
     let paginationKey = '';
-    scrapeReviews(id, baseUrl, paginationKey, reviewsTXT, 0);
+    setTimeout(() => {
+      console.log(`Dispatched request #${index + 1} for ${baseUrl}`);
+      scrapeReviews(id, titles[index], baseUrl, paginationKey, reviewsTXT, 0);
+    }, index * 250);
+    // scrapeReviews(id, baseUrl, paginationKey, reviewsTXT, 0);
   });
 });
 
-function scrapeReviews(id, baseUrl, paginationKey, reviewsTXT, numReviews) {
+function scrapeReviews(id, title, baseUrl, paginationKey, reviewsTXT, numReviews) {
   // console.log(baseUrl + paginationKey);
   axios.get(baseUrl + paginationKey)
        .then(res => {
           let $ = cheerio.load(res.data);
           $('.text').each((index, element) => {
             // remove all newlines and carriage returns
+            // also get rating! -- maybe look at container itself?
             numReviews++;
             reviewsTXT += $(element).text().replace(/(\r\n|\n|\r)/gm,' ');
             reviewsTXT += '\n';
@@ -42,9 +46,9 @@ function scrapeReviews(id, baseUrl, paginationKey, reviewsTXT, numReviews) {
           // set paginationKey if it exists
           paginationKey = $('.load-more-data').attr('data-key');
           if (paginationKey) {
-            scrapeReviews(id, baseUrl, `?paginationKey=${paginationKey}`, reviewsTXT, numReviews);
+            scrapeReviews(id, title, baseUrl, `?paginationKey=${paginationKey}`, reviewsTXT, numReviews);
           } else {
-            reviewsTXT = `${baseUrl}\nReview Count: ${numReviews}\n${reviewsTXT}`;
+            reviewsTXT = `${baseUrl}\n${title}\nReview Count: ${numReviews}\n${reviewsTXT}`;
             fs.appendFile(`${reviewDirectory}/${genre}/${id}.txt`, reviewsTXT, err => {
               if (err) { 
                 console.error(err);
@@ -55,23 +59,3 @@ function scrapeReviews(id, baseUrl, paginationKey, reviewsTXT, numReviews) {
        .catch(err => console.error(err));
 
 }
-
-// function scrapeReviews(url) {
-//   axios.get(url)
-//         .then(response => {
-//           let $ = cheerio.load(response.data);
-//           $('.text').each((index, element) => {
-//             // remove all newlines and carriage returns
-//             reviewsTXT += $(element).text().replace(/(\r\n|\n|\r)/gm,' ');
-//             numReviews++;
-//           });
-//           // set paginationKey if it exists
-//           paginationKey = $('.load-more-data').attr('data-key');
-//           if (paginationKey) {
-//             scrapeReviews(`${baseUrlls}?paginationKey=${paginationKey}`);
-//           } else {
-//             res.status(200).send(numReviews + '\n' + reviewsTXT);
-//           }
-//         })
-//         .catch(err => res.status(500).send(err));
-//       }
