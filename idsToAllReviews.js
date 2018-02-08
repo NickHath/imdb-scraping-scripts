@@ -5,7 +5,7 @@ const axios = require('axios')
 
 let titleDirectory = './reviews-genre/titles-with-ids';
 let reviewDirectory = './reviews-genre/all-reviews';
-let genre = 'horror';
+let genre = 'comedy';
 // let genres = ['horror', 'comedy', 'animation', 'romance', 'documentary'];
 
 // fs.mkdir(`${reviewDirectory}`, '0o777', err => console.log(err));
@@ -18,7 +18,7 @@ fs.readFile(`${titleDirectory}/${genre}_titles_with_ids.txt`, 'utf-8', (err, dat
     return tokens[tokens.length - 1].replace(',', '');
   });
   // test on small list
-  imdbIDs = imdbIDs.slice(0,100);
+  // imdbIDs = imdbIDs.slice(0,100);
   imdbIDs.forEach((id, index) => {
     let baseUrl = `http://www.imdb.com/title/${id}/reviews/_ajax`;
     let reviewsTXT = '';
@@ -26,7 +26,7 @@ fs.readFile(`${titleDirectory}/${genre}_titles_with_ids.txt`, 'utf-8', (err, dat
     setTimeout(() => {
       console.log(`Dispatched request #${index + 1} for ${baseUrl}`);
       scrapeReviews(id, titles[index], baseUrl, paginationKey, reviewsTXT, 0);
-    }, index * 175);
+    }, index * 500);
   });
 });
 
