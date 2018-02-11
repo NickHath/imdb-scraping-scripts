@@ -5,7 +5,7 @@ const axios = require('axios')
 
 let titleDirectory = './reviews-genre/titles-with-ids';
 let reviewDirectory = './reviews-genre/all-reviews';
-let genre = 'animation';
+let genre = 'romance';
 // let genres = ['horror', 'comedy', 'animation', 'romance', 'documentary'];
 
 // fs.mkdir(`${reviewDirectory}`, '0o777', err => console.log(err));
